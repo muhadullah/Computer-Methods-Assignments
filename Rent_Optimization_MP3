@@ -1,0 +1,63 @@
+#include <string>
+#include <cmath>
+#include <iostream>
+#include <iomanip>
+ 
+    using namespace std;
+ 
+    /*
+   
+    Say a real estate office handles 50 apartment units.
+    When the rent is $600 per month, all the units are occupied.
+    However, for each $40 increase in rent, one unit becomes vacant.
+    Moreover, each occupied unit requires an average of $27 per month for maintenance.
+   
+    How many units should be rented to maximize the profit?
+ 
+Write a program that prompts the user to enter:
+1.The total number of units..
+2.The rent to occupy all the units..
+3.The increase in rent that results in a vacant unit..
+4.Amount to maintain a rented unit.. */
+ 
+    int units, rent, rentInc, maintCost, Income, previousIncome, maxIncome, VacancyCount = 0;
+    int numUnits, previousRent, previousMaint, totalMaint;
+ 
+int main() {
+   
+    cout << "Enter total number of units... "; //50
+    cin >> units;
+    cout << "Enter the rent to occupy all the units... "; //$600
+    cin >> rent;
+    cout << "Enter the increase in rent that results in a vacant unit... "; //$40
+    cin >> rentInc;
+    cout << "Ammount to maintain a rented unit... "; //$27 per unit
+    cin >> maintCost;
+ 
+    Income = ((units * rent) - (units * maintCost));
+                //income                expenses
+ 
+    while (Income > previousIncome) {
+ 
+       
+        previousRent = rent;
+        previousIncome = Income;
+        previousMaint = maintCost;
+        rent += 40;
+        VacancyCount++;
+        units -= 1;
+        Income = ((units * rent) - (units * maintCost));
+ 
+        //cout << "income" << Income << '\n';
+    }
+   
+    maxIncome = previousIncome; // just renaming the variable while it's out of the loop to make more sense.
+    numUnits = (50 - VacancyCount +1); // add one to compensate for break from loop
+    totalMaint = (previousMaint * numUnits);
+    cout << '\n' << "Maximum income: $" << maxIncome << '\n';
+    cout << "Optimum number of units occupied: " << numUnits << '\n';
+    cout << "Ideal rent per unit: " << previousRent << '\n';
+    cout << "Total Maintenance Expenses: " << totalMaint << '\n' << '\n';
+ 
+    return 0;
+}
