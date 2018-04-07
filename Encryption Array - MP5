@@ -1,0 +1,253 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <vector>
+ 
+using namespace std;
+ 
+ifstream input_File;
+char Firsstletter, letter, keyword_Array[5][5], keyword_characters, ROWS, COL, repeatedChar[5][5], tempArray[5][5];
+char z = 'A', Character1, Character2, codeLetter, char_output, ORIGINAL,NEW, NEW2, Encode_Decode[100], encodedArray[256];
+string inputFile_lineString, keyword, EncryptDecryptString;
+istringstream iss;
+bool encrypt, decrypt, encDec, duplicate, a, function_Was_Ran;
+int Count = 1, count2, ElementCount, KeyStringLength, sCount, j, k, RowCount, ColCount;
+string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXY", sortedKey, keyString, sortedArray, NewKeyString; // exclude letter Z
+char *find = Encode_Decode, outputArray[100], numbers;
+ 
+/*First, the program must read in a keyword, which will be all capital letters.
+The letters of the keyword must be inserted in the order in which they occur into a 5x5 two dimensional array by rows,
+but if a letter is repeated in the keyword it is only used once in the two-dimensional array.
+Then the array is filled up with the remaining letters of the alphabet in order (excluding the 'Z').*/
+ 
+void print_Array();
+void create_code_array();
+void encrypt_Decrypt();
+string remove_Duplicates();
+void get_Data(string &line);
+string get_Keyword();
+void encodeLine();
+void decodeLine();
+ 
+int main() {
+    //This file has the keyword on the first line, then a series of lines containing the message to be either encrypted or decrypted.
+    //The program should read these lines until it comes to the end of the file.
+    input_File.open("mp5InputFile.txt");
+    if (!input_File.is_open())
+    {
+        cout << "File not found" << endl;
+        system("pause");
+        return 1;
+    }
+ 
+    get_Keyword(); cout << "Keyword is " << keyword << '\n';
+    remove_Duplicates();
+   
+    print_Array(); cout << endl;
+   
+    get_Data(inputFile_lineString); //read in a series of lines containing either messages to encrypt or decrypt.
+ 
+    while (!input_File.eof())
+    {
+        get_Data(inputFile_lineString);
+        encrypt_Decrypt();
+ 
+    cout << endl << "***************************" << '\n' << "Line: " <<  Count << ". "; Count++;
+    //method of encryption = substitution cipher based on keyword"
+        decodeLine();
+        encodeLine();
+ 
+       
+   
+    }
+    return 0;
+}
+ 
+string get_Keyword() {
+    input_File >> keyword;
+    return keyword;
+}
+ 
+//Function to get each line to be encrypted or decrypted
+void get_Data(string &line) {
+    getline(input_File, line);
+}
+string remove_Duplicates() {
+    keyString = keyword + alphabet;
+ 
+ 
+    for (int x = 0; x < keyString.size(); x++) { //step through keyword & alphabet
+        Character1 = keyString[x];
+ 
+        for (int y = 0; y < keyString.size(); y++) { // step through keyword & Alphabet again to compare for duplicate entires
+            Character2 = keyString[y];
+ 
+            if (x != y)
+                if (Character1 == Character2)
+                    keyString.erase(keyString.begin() + y);
+        } //comparison loop
+    } //main check loop
+    NewKeyString = keyString;
+    return NewKeyString;
+}
+void encrypt_Decrypt() {
+    if ('E' == inputFile_lineString[0]) { // Check first character of line (encrypt / decrypt prompt)
+        encrypt = true;
+    }
+    //cout << inputFile_lineString;
+    else encrypt = false; //Reset bool encrypt
+ 
+}
+void create_code_array() { //char &OutputChar, int &ROW, int &COL
+ 
+ 
+                           //while (function_Was_Ran == false) remove_Duplicates(); //statement  to prevent function from running everytime. if it runs twice, all elements will be removed.        
+    ElementCount = 0;
+    KeyStringLength = NewKeyString.length();
+ 
+    for (int row = 0; row < 5; row++) {         //creating 5x5 array from keycode string
+        for (int col = 0; col < 5; col++) {
+            keyword_Array[row][col] = NewKeyString[ElementCount];
+            if (ElementCount < KeyStringLength)ElementCount++;
+            char_output = keyword_Array[row][col];
+ 
+            /*  for (int count = 1; count < inputFile_lineString.length(); count++) {
+            if (keyword_Array[row][col] == inputFile_lineString[count]) { // comparing element of keyword array with string characters
+            swap(keyword_Array[row][col], keyword_Array[col][row]);
+ 
+            //NEW = keyword_Array[row][col];
+            Encoded[count] = keyword_Array[row][col]; // the ("nth" element = keyword Array at position [x][y]
+            //encodedArray[count] = Encoded[count];
+            //NEW2 += encodedArray[count];
+            NEW = Encoded[count];
+            encodedString[count] += NEW; break;
+            //cout << Encoded[count];
+            }
+            else break;
+            }
+            */
+        }
+ 
+    }
+}
+void print_Array() {
+   
+    create_code_array();
+    cout << '\n' << "  0  1  2  3  4" << '\n';
+    cout << "---------------";
+    for (int row = 0; row < 5; row++) {
+        cout << '\n' << row;
+        for (int col = 0; col < 5; col++) {
+            cout << "|"  << keyword_Array[row][col] << "|";
+        }
+       
+    }
+    cout << '\n' << "----------------";
+}
+ 
+/*A plain text message will be encrypted as follows:
+Each letter in the message will be found in the table, and then encrypted by reversing the row and column values*/
+void encodeLine() {
+    ElementCount = 0;
+ 
+   
+    if (encrypt == true)    {transform(inputFile_lineString.begin(), inputFile_lineString.end(), inputFile_lineString.begin(), toupper); //encrypted text in upper case letters.
+ 
+    for (int row = 0; row < 5; row++) {         //creating 5x5 array from keycode string
+        for (int col = 0; col < 5; col++) {
+            keyword_Array[row][col] = NewKeyString[ElementCount];
+            if (ElementCount < KeyStringLength) {
+                ElementCount++;
+                char_output = keyword_Array[row][col];
+                tempArray[row][col] = keyword_Array[row][col];
+            }
+ 
+            for (int count = 2; count < inputFile_lineString.length(); count++) {
+                NEW = inputFile_lineString[count];
+                if (isspace(inputFile_lineString[count])) Encode_Decode[count] = ' ';
+                if (inputFile_lineString[count] == '-') Encode_Decode[count] = '-';
+                if (inputFile_lineString[count] == '$') Encode_Decode[count] = '$';
+                if (inputFile_lineString[count] == '"') Encode_Decode[count] = '"';
+                if (isdigit(inputFile_lineString[count])) { numbers = inputFile_lineString[count]; Encode_Decode[count] = numbers; } // detects numbers,  assigns to place in array
+ 
+                if (keyword_Array[row][col] == inputFile_lineString[count]) { // comparing element of keyword array with string characters
+                    //need 2nd if statement and array for special characters
+                   
+                    swap(keyword_Array[row][col], keyword_Array[col][row]);
+                    Encode_Decode[count] = keyword_Array[row][col]; // the ("nth" element = keyword Array at position [x][y]
+                    swap(keyword_Array[col][row], keyword_Array[row][col]);
+                                   
+                }
+ 
+                else continue;
+            }
+ 
+           
+ 
+        }
+      }
+    // Code block to print out the messages and their encoded equivalents
+    cout << inputFile_lineString << '\n' << "Encrypts to:  ";
+ 
+    for (count2 = 2; count2 < inputFile_lineString.length(); count2++){
+        EncryptDecryptString = *(Encode_Decode + count2);
+   
+        cout << EncryptDecryptString;
+        EncryptDecryptString.clear();
+    }
+    cout << '\n' << "***************************" << '\n' << '\n';
+    }
+}
+//A message that is already encrypted can be decrypted using exactly the same algorithm
+void decodeLine() {
+    ElementCount = 0;
+ 
+ 
+    if (encrypt != true) {
+        transform(inputFile_lineString.begin(), inputFile_lineString.end(), inputFile_lineString.begin(), toupper); // Convert to uppercase because array & key = uppercase
+ 
+        for (int row = 0; row < 5; row++) {         //creating 5x5 array from keycode string
+            for (int col = 0; col < 5; col++) {
+                keyword_Array[row][col] = NewKeyString[ElementCount];
+                if (ElementCount < KeyStringLength) {
+                    ElementCount++;
+                    char_output = keyword_Array[row][col];
+                    tempArray[row][col] = keyword_Array[row][col]; //ERASE THIS LINE
+                }
+ 
+                for (int count = 1; count < inputFile_lineString.length(); count++) {
+ 
+                    if (isspace(inputFile_lineString[count])) Encode_Decode[count] = ' ';
+                    if (inputFile_lineString[count] == '-') Encode_Decode[count] = '-';
+                    if (inputFile_lineString[count] == '$') Encode_Decode[count] = '$';
+                    if (inputFile_lineString[count] == '"') Encode_Decode[count] = '"';
+                    if (isdigit(inputFile_lineString[count])) { numbers = inputFile_lineString[count]; Encode_Decode[count] = numbers; } // detects numbers,  assigns to place in array
+ 
+                    if (keyword_Array[row][col] == inputFile_lineString[count]) { // comparing element of keyword array with string characters from each given line
+                                                                                 
+                        swap(keyword_Array[row][col], keyword_Array[col][row]);
+                        Encode_Decode[count] = keyword_Array[row][col]; // the ("nth" element = keyword Array at position [x][y]
+                        swap(keyword_Array[col][row], keyword_Array[row][col]);
+ 
+                    }
+ 
+                    else continue; //if compared character != white space or itself, continue loop
+                }
+            }
+        }
+        // Code block to print out the messages and their encoded equivalents
+        cout << '\n'<< inputFile_lineString << '\n' << "Decrypts to:  ";
+       
+        for (count2 = 2; count2 < inputFile_lineString.length(); count2++) {
+            EncryptDecryptString = *(Encode_Decode + count2); // uses pointer to locate where each character is stored in array reassigns to location in string.
+ 
+        transform(EncryptDecryptString.begin(), EncryptDecryptString.end(), EncryptDecryptString.begin(), tolower); //plain text in lower case letters and the
+ 
+            cout << EncryptDecryptString;
+            EncryptDecryptString.clear();
+        }
+        cout << '\n' << "***************************" << '\n' << '\n';
+    }
+}
