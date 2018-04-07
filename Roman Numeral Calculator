@@ -1,0 +1,115 @@
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <fstream>
+ 
+using namespace std;
+ 
+//You are to design and implement a Roman numeral calculator.
+ 
+// This program is to be done using functions.
+//Your program inputs Data from the text file mp4romanletrdata.txt and completes the arithmatic operations.
+ 
+/*1. Read in text and interpret
+2. Print out data being used: "The first number is MCCXXVI ( 1226 ). The second number is CV ( 105 ). The operator is +"
+3. Print answer: "The result is 1331 ( MCCXXXI )." */
+ 
+char Operator, RomcharsOfBlock2, RomcharsOfBlock1;
+int intFromRom2,romNumBlock1, romNumBlock2;
+ifstream infile;
+string firstRomanNum, secondRomanNum, str, romans1, romans2;
+char Operator2;
+int answer, first_sum_from_romans, second_sum_from_romans;
+ 
+//Function to break up each row into individual tokens: operand1 operand2 and the operator
+void parseRows(string & str_sumOfRomans1, string & str_sumOfRomans2, char & Operator) {
+    (getline(infile, str));
+    istringstream iss(str);
+    (iss >> str_sumOfRomans1 >> str_sumOfRomans2 >> Operator);
+ 
+}
+ 
+int get_Data(char & RomcharsOfBlock1, int & sum1, char & RomcharsOfBlock2, int & sum2,char & Operator, string & romans1, string & romans2) {
+    parseRows(firstRomanNum, secondRomanNum, Operator2);
+ 
+    romans1 = firstRomanNum;
+    romans2 = secondRomanNum;
+    Operator = Operator2;
+ 
+    sum1 = 0;//Resetting the sum of this roman numeral block.
+   
+    //breaking up string blocks of roman numerals into array of characters for use in switch
+    int length1 = firstRomanNum.length();
+    for (int i = 0; i < length1; i++)
+    {
+        RomcharsOfBlock1 = firstRomanNum[i];
+ 
+    switch (RomcharsOfBlock1) //Converting indv. characters to decimal #'s / integers.
+        {
+        case 'I':sum1 += 1; continue;
+        case 'V':sum1 += 5; continue;
+        case 'X':sum1 += 10; continue;
+        case 'L':sum1 += 50; continue;
+        case 'C':sum1 += 100; continue;
+        case 'D':sum1 += 500; continue;
+        case 'M':sum1 += 1000; continue;
+        }
+    }
+   
+    //NEXT BLOCK:
+    sum2 = 0; //Resetting the sum of this roman numeral block.
+ 
+              //breaking up string blocks of roman numerals into array of characters for use in switch
+    int length2 = secondRomanNum.length();
+    for (int i = 0; i < length2; i++)
+    {
+        RomcharsOfBlock2 = secondRomanNum[i];
+ 
+        switch (RomcharsOfBlock2) //Converting indv. characters to decimal #'s / integers
+        {
+        case 'I':sum2 += 1; continue;
+        case 'V':sum2 += 5; continue;
+        case 'X':sum2 += 10; continue;
+        case 'L':sum2 += 50; continue;
+        case 'C':sum2 += 100; continue;
+        case 'D':sum2 += 500; continue;
+        case 'M':sum2 += 1000; continue;
+        }
+    }
+   
+    return sum1, sum2;
+}
+ 
+void Arithmatic(int & answer) {
+    get_Data(RomcharsOfBlock1, first_sum_from_romans, RomcharsOfBlock2, second_sum_from_romans, Operator, romans1, romans2);
+ 
+    cout << "The first number is " << romans1 << " (" << first_sum_from_romans << ")" << '\n'
+        << "The second number is " << romans2 << " (" << second_sum_from_romans << ")" << '\n'
+        << "The operator is " << Operator << '\n';
+ 
+    switch (Operator)
+    {
+    case '+': answer = first_sum_from_romans + second_sum_from_romans; break;
+    case '-': answer = first_sum_from_romans - second_sum_from_romans; break;
+    case '*': answer = first_sum_from_romans*second_sum_from_romans; break;
+    case '/': answer = first_sum_from_romans / second_sum_from_romans; break;
+    }
+}
+ 
+    void printResults() {
+        Arithmatic(answer);
+        cout << "The result is " << answer << '\n' << endl; // The calculation 25/4 should be 6.25 but directions specify integer operations.
+    }
+        //"The arithmetic operators that your program should recognize in the input are +, -, *, and /.
+    //These should perform the C++ operations of integer addition, subtraction, multiplication, and division."
+ 
+int main() {
+    infile.open("mp4romanletrdata.txt");
+    while (!infile.eof())
+    {
+        printResults();
+    }
+ 
+    return 0;
+}
