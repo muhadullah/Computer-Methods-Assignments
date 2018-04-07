@@ -1,0 +1,132 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+ 
+/* Your assignment for MP2 is to implement a computerized system like this for a very small prestigious university.
+ The university has two schools, Liberal Arts and Music, each with their own criteria for accepting students.
+ Your program must read in certain information about an applicant and print a message saying whether the applicant should be accepted or not.
+ 
+ Your program must process the data until the end of file is reached, at which time the program must print out the total number of applicants
+ and the number of acceptances to each school. The data file should be created by you. Create the file and
+ store it in the same project folder as your program. Please turn in a hard copy of this file along with your program and output
+*/
+ 
+int appNum = 0;
+int totalApplicants, totalMusicAccept, totalLibaccept;
+int LibaccptNum = 0;
+int MusicaccptNum = 0;
+string Accept, txt, scores;
+char EOL = '\n';
+string School, Music, la, alumnus, reason;
+string s1, s2, s3;
+ifstream inputfile;
+float GPA, math, verb;
+bool almn, BoolAccpt;
+string strAccpt, printSchool;
+   
+ 
+void getAppData(string &School, float &GPA, float &math, float &verb, string &alumnus) {
+ 
+    (getline(inputfile, txt));
+    istringstream iss(txt);
+ 
+        while (iss >> School >> s1 >> s2 >> s3 >> alumnus) //Parse each line
+        {
+            try {
+                GPA = stof(s1);
+                math = stof(s2);
+                verb = stof(s3);
+            }
+        catch (const exception&)
+        {
+            continue;
+        }
+    }
+}
+ 
+int main() {
+    cout << "Acceptance to College by Muhammad Abdullah" << '\n' << '\n';
+   
+    inputfile.open("mp3accept.txt");
+ 
+    while (!inputfile.eof())
+    {
+        appNum++;
+        getAppData(School, GPA, math, verb, alumnus); //read in tokens
+ 
+         
+/*
+            DETERMINING if LA. applicant is accepted or rejcted ***
+            The criteria for acceptance are:
+Liberal Arts
+1. No more than 5 people can be accepted.
+2. If a parent is an alumnus, the GPA must be at least 3.0, but if no parents are alumni the GPA must be at least 3.5.
+3. If a parent is an alumnus, the combined SAT score must be at least 1000, but if no parents are alumni the SAT must be at least 1200.*/
+ 
+       
+ 
+        // DETERMINING why app. was rejected
+            if ((School == "L") && (LibaccptNum >= 5)) { BoolAccpt = false; reason = " Admissions full, Maximum applicants admitted"; }
+            else if ((School == "L") && (alumnus == "Y") && (math + verb < 1000)) { BoolAccpt = false; reason = " - SAT is too low"; }
+            else if ((School == "L") && (alumnus == "N") && (math + verb < 1200)){BoolAccpt = false; reason = " - SAT is too low"; }
+            else if ((School == "L") && (alumnus == "N") && (GPA < 3.5)) { BoolAccpt = false; reason = " - GPA is too low"; }
+            else if ((School == "L")&&(alumnus == "Y") && (GPA < 3.0)) { BoolAccpt = false; reason = " - GPA is too low"; }
+            else if ((School == "L") && (BoolAccpt != true)) strAccpt = " Rejected ";
+ 
+            if ((School == "L") && (alumnus == "Y") && (GPA >= 3.0) && ((math + verb) >= 1000) && (LibaccptNum < 5)) // Case 1 = IS alumni
+            {
+                BoolAccpt = true; strAccpt = " Accepted into Liberal Arts!! ";
+                LibaccptNum++;
+            }
+            if ((School == "L") && (alumnus == "N") && (GPA >= 3.5) && ((math + verb) >= 1200) && (LibaccptNum < 5)) // Case 2 = is NOT alumni
+            {
+                BoolAccpt = true; strAccpt = " Accepted into Liberal Arts!! ";
+                LibaccptNum++;
+            }
+ 
+/*      DETERMINING IF music student was accepted***
+1. Music – no preferences for alumni here.
+2. No more than 3 people can be accepted.
+3. Math and verbal SAT’s must be at least 500.
+ 
+*/
+        if ((School == "M") && (MusicaccptNum < 3) && (math >= 500 && verb >= 500))
+        {
+            BoolAccpt = true; strAccpt = " Accepted into Music!!";
+            MusicaccptNum++;
+        }
+ 
+        // DETERMINING why app. was rejected
+        if ((School == "M") && ((math < 500) || (verb < 500) || (MusicaccptNum >= 3) ))
+        {
+            BoolAccpt = false; strAccpt = " Rejected ";
+            if ((School == "M") && (BoolAccpt != true) && (math < 500) || (verb < 500)) reason = "- SAT is too low ";
+        if ((School == "M") && (BoolAccpt != true) && MusicaccptNum >= 3) reason = " Admissions full, Maximum applicants admitted";
+        }
+ 
+        if (School == "L") printSchool = "...Applying to Liberal Arts";
+        if (School == "M") printSchool = "...Applying to School of Music";
+ 
+        cout << "Applicant #: " << appNum << '\n';
+        cout << "School = " << School << ' ';
+        cout << fixed << setprecision(1);
+        cout << "GPA = " << GPA << setprecision(0);
+        cout << " Math = "<< math << " Verbal = " << verb << " Alumnus = " << alumnus << '\n';
+        cout << printSchool << '\n'
+            << strAccpt << reason << '\n' << "*******************************" << '\n' << endl;
+ 
+        reason.clear();
+        strAccpt.clear();
+    }
+ 
+    //Totals
+    cout << '\n' << '\n' << "Total Applicants: " << appNum << '\n';
+    cout << "Total accepted into music: " << MusicaccptNum << '\n';
+    cout << "total accepted into Liberal Arts: " << LibaccptNum << '\n' << '\n';
+ 
+    return 0;
+}
