@@ -1,0 +1,97 @@
+#include <string>
+#include <fstream>
+#include<iostream>
+#include<sstream>
+#include<iostream>
+#include<iomanip>
+ 
+using namespace std;
+enum Marital_Status {Married, Divorced, Single};
+ifstream input_File;
+string line, firstName, lastName, previousEntry;
+char gender, middleInitial, mStatus, Character;
+int CommasLocation, spacing, Count, setWidth;
+ 
+string  Get_line();
+string get_Gender();
+ 
+// Define an enum for the Marital Status of the person (with the values SINGLE, MARRIED and DIVORCED)
+// write a function that reads in the character from the file and returns the appropriate enum value.
+void Enum_function_MaritalStatus();
+ 
+//Read the name from the file into a string variable and
+//write another function that uses the functions of the string class (e.g. find(), substr() etc.) to clean up the name
+//and create a new string variable containing the name in the new format.
+void standardize_Names();
+ 
+int main() {
+ 
+    input_File.open("mp6names.txt");
+    if (!input_File.is_open())
+    {
+        cout << "file not found!" << endl;
+        system("pause");
+        return 1;
+    }
+ 
+    cout << "Original name                 Standardized name" << '\n' << "----------------              ------------------" <<endl;
+    while (!input_File.eof()) {
+ 
+        input_File.get(gender);
+        input_File.get(mStatus);
+ 
+       
+ 
+        standardize_Names();
+        if (lastName == previousEntry) break; //Prevent repetitions at end of file.
+        cout << lastName << ", " << middleInitial << ". " << firstName;
+       
+        spacing = (lastName.size() + 2 + firstName.size()); //Formatting new column with standardized names
+        setWidth = 30 - spacing; // adjusting spaces to align all text in column.
+        cout.width(setWidth);
+       
+        cout << get_Gender() << ' ' << firstName << ' ' << middleInitial << ' ' << lastName << endl;
+        previousEntry = lastName;
+    }
+    cout << endl;
+ 
+    return 0;
+}
+ 
+//mp6names.txt
+ 
+void standardize_Names() //Mr. Johann S. Bach
+{
+    Get_line();
+    CommasLocation = line.find_first_of(',');
+    if (CommasLocation != -1) line.replace(CommasLocation, 1, " ");
+ 
+    istringstream iss(line);
+    iss >> lastName >> firstName >> middleInitial;
+}
+ 
+string get_Gender()
+{ //All males will have the title “Mr.” – married females will have “Mrs.” and single or divorced females will have “Ms.”
+ 
+    if (gender == 'M') return "Mr.";
+    else if (Married && gender == 'F') return "Mrs.";
+    else if (Single || Divorced && gender == 'F') return "Ms.";
+ 
+}
+ 
+void Enum_function_MaritalStatus()
+{
+    //married females will have “Mrs.” and single or divorced females will have “Ms.”
+    switch (mStatus)
+    {
+    case 'M': Married; break;
+    case 'S': Single;  break;
+    case 'D': Divorced; break;
+    }
+}
+ 
+string Get_line() {
+        getline(input_File, line);
+        return line;
+        //MS    Bach,   Johann    S.
+}
