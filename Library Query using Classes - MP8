@@ -1,0 +1,127 @@
+//You will develop a program that creates a class for a book. The main program will simply test this class.
+ 
+#include "book.h"
+#include <iostream>
+#include <string>
+#include<fstream>
+ 
+ifstream Part1Class_Test_InputFile, Part2Catalog_InputFile, ISBN_File;
+string line, Data, Author, Title, bookInfo, bookArray[10], search_string_ISBN;
+string author, title, isbn, strBookArray;
+int Count = 0, Count2, Count3 = 0, find_int_ISBN, found;
+bool boolFound = false;
+book book1, book2, bookX[30]; //It should declare two book objects (book1 and book2) using the default constructor.
+ 
+using namespace std;
+ 
+void Open_Files();
+void Part1_Test_Book_Class();
+void Part2_BookArray();
+void print_pt2_Array();
+void Search_ISBN();
+ 
+//Mp8bookDriver.cpp – should contain the main program to test the class.
+int main() {
+ 
+    Open_Files();
+    Part1_Test_Book_Class();
+    Part2_BookArray();
+    print_pt2_Array();
+    Search_ISBN();
+ 
+    return 0;
+}
+ 
+void Open_Files()
+{
+    Part1Class_Test_InputFile.open("mp7book.txt"); //Open the input file and call the GetData function for book2 and then print its information.
+    if (!Part1Class_Test_InputFile.is_open())
+    {
+        cout << "file not found!" << endl;
+        system("pause");
+    }
+ 
+    Part2Catalog_InputFile.open("mp8bookarray.txt"); //longer file containing book info (Author, Title, ISBN)
+    if (!Part2Catalog_InputFile.is_open())
+    {
+        cout << "file not found!" << endl;
+        system("pause");
+    }
+ 
+    ISBN_File.open("mp8bokkISBN.txt"); //longer file containing book info (Author, Title, ISBN)
+    if (!ISBN_File.is_open())
+    {
+        cout << "file not found!" << endl;
+        system("pause");
+    }
+}
+ 
+void Part1_Test_Book_Class()
+{
+    cout << " ----------------------------------------------------"<<'\n' << "PART 1: Testing the book class:" << endl << " ----------------------------------------------------" << endl;
+ 
+    book1.Print(); cout << endl; //Call the print function for book1 (to show that the default constructor is correct).
+    cout << "The information for book 2 is: ";
+    while (!Part1Class_Test_InputFile.eof())
+    {
+ 
+        if (Count == 3) { Count = 0; break; }
+        getline(Part1Class_Test_InputFile, line);
+        book2.getData(line);
+        Count++;
+    }
+    book2.getISBN(); //Finally, test the GetISBN function for book2 and output the result returned from the function.
+    cout << book2.Author << ' ' << book2.Title << ' ' << endl
+        << "book2 has ISBN " << book2.ISBN << endl << endl << " ----------------------------------------------------" << endl;
+}
+ 
+ 
+ 
+   
+//PART 2: use the book class to create an array of books for a small library. using mp8bookarray.txt  -- 10 books in the file.
+//Open mp8bookarray.txt and use a loop to call the GetData function to read the information about the books into the objects in the array. Print out the list of books in the library in a nice format.
+ 
+void Part2_BookArray()
+{
+    for (int j = 1; j < 11; j++)
+    {
+        getline(Part2Catalog_InputFile, bookInfo);
+        bookX[j].getData(bookInfo);
+       
+        getline(Part2Catalog_InputFile, bookInfo);
+        bookX[j].getData(bookInfo);
+       
+        getline(Part2Catalog_InputFile, bookInfo);
+        bookX[j].getData(bookInfo);
+    }
+}
+ 
+ 
+void print_pt2_Array()
+{
+    cout << "Part 2: Book Array:" << endl << " ----------------------------------------------------" <<endl;       
+        for (int i = 1; i < 11; i++)
+        {
+            cout << i << ". " << bookX[i].Author << ' ' << bookX[i].Title << ' ' << bookX[i].isbn << endl;
+        }
+ 
+}
+ 
+//OPEN mp8bokkISBN.txt use it to search for each ISBN in library. if found cout book info else not found message.
+void Search_ISBN()
+{
+    cout << endl << "Library search function" << endl << " ----------------------------------------------------" << endl;
+    cout << "| ISBN   | Status   | Book info                     |" << endl;
+    cout << " ----------------------------------------------------" << endl;
+    for (int j=0; j<9; j++)
+    {
+        getline(ISBN_File, search_string_ISBN);
+    for (int i = 0; i < 10; i++)
+    {
+        found = bookX[i].isbn.find(search_string_ISBN);
+        if (found != -1) { cout << search_string_ISBN <<" found      " << bookX[i].Author <<  ' ' << bookX[i].Title << endl; break; }
+        if (i == 9 && found == -1) cout << search_string_ISBN << " not found" << endl;
+        }
+    }
+    cout << endl;
+}
